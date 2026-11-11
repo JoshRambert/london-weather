@@ -6,8 +6,8 @@ struct Hour: Codable {
     let temp: Double
     let feelsLike: Double
     let humidity: Double
-    let precip: Double
-    let precipProb: Double
+    let precipitation: Double
+    let precipitationProb: Double
     let snowDepth: Double
     let windGust: Double
     let windSpeed: Double
@@ -27,8 +27,8 @@ struct Hour: Codable {
         case temp
         case feelsLike = "feelslike"
         case humidity
-        case precip
-        case precipProb = "precipprob"
+        case precipitation = "precip"
+        case precipitationProb = "precipprob"
         case snowDepth = "snowdepth"
         case windGust = "windgust"
         case windSpeed = "windspeed"
