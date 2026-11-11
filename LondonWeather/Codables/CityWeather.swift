@@ -22,4 +22,9 @@ struct CityWeather: Codable, Sendable {
         case days
         case currentConditions
     }
+
+    func forecastDays(unitGroup: WeatherUnitGroup) -> [Day.Forecast] {
+        let timeZone = TimeZone(identifier: timezone) ?? .current
+        return days.prefix(7).map { $0.forecastDay(timeZone: timeZone, unitGroup: unitGroup) }
+    }
 }

@@ -6,8 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		BB0000000000000000000006 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA000000000000000000000A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000006;
+			remoteInfo = LondonWeather;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		AA0000000000000000000005 /* LondonWeather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LondonWeather.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB0000000000000000000004 /* LondonWeatherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LondonWeatherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -16,10 +27,22 @@
 			path = LondonWeather;
 			sourceTree = "<group>";
 		};
+		BB0000000000000000000001 /* LondonWeatherTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = LondonWeatherTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		AA0000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000002 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000000000001 /* LondonWeather */,
+				BB0000000000000000000001 /* LondonWeatherTests */,
 				AA0000000000000000000004 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000000000005 /* LondonWeather.app */,
+				BB0000000000000000000004 /* LondonWeatherTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -69,6 +94,28 @@
 			productName = LondonWeather;
 			productReference = AA0000000000000000000005 /* LondonWeather.app */;
 			productType = "com.apple.product-type.application";
+		};
+		BB0000000000000000000005 /* LondonWeatherTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB000000000000000000000A /* Build configuration list for PBXNativeTarget "LondonWeatherTests" */;
+			buildPhases = (
+				BB0000000000000000000003 /* Sources */,
+				BB0000000000000000000002 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB0000000000000000000007 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BB0000000000000000000001 /* LondonWeatherTests */,
+			);
+			name = LondonWeatherTests;
+			packageProductDependencies = (
+			);
+			productName = LondonWeatherTests;
+			productReference = BB0000000000000000000004 /* LondonWeatherTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -101,6 +148,7 @@
 			projectRoot = "";
 			targets = (
 				AA0000000000000000000006 /* LondonWeather */,
+				BB0000000000000000000005 /* LondonWeatherTests */,
 			);
 		};
 /* End PBXProject section */
@@ -123,7 +171,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BB0000000000000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BB0000000000000000000007 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000006 /* LondonWeather */;
+			targetProxy = BB0000000000000000000006 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AA000000000000000000000C /* Debug */ = {
@@ -217,6 +280,42 @@
 			};
 			name = Release;
 		};
+		BB0000000000000000000008 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.londonweather.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LondonWeather.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LondonWeather";
+			};
+			name = Debug;
+		};
+		BB0000000000000000000009 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.londonweather.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LondonWeather.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LondonWeather";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -225,6 +324,15 @@
 			buildConfigurations = (
 				AA000000000000000000000E /* Debug */,
 				AA000000000000000000000F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB000000000000000000000A /* Build configuration list for PBXNativeTarget "LondonWeatherTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB0000000000000000000008 /* Debug */,
+				BB0000000000000000000009 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

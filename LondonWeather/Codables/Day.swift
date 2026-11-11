@@ -1,6 +1,14 @@
 import Foundation
 
 struct Day: Codable, Sendable {
+    struct Forecast: Equatable, Identifiable {
+        let id: String
+        let dayName: String
+        let highTemperature: String
+        let lowTemperature: String
+        let conditions: String
+    }
+
     let datetime: String
     let datetimeEpoch: Int
     let tempMax: Double
@@ -51,5 +59,37 @@ struct Day: Codable, Sendable {
         case aqiUS = "aqius"
         case aqiEU = "aqieur"
         case hours
+    }
+
+    func forecastDay(timeZone: TimeZone, unitGroup: WeatherUnitGroup) -> Forecast {
+        Forecast(
+            id: datetime,
+            dayName: weekdayName(timeZone: timeZone),
+            highTemperature: unitGroup.temperatureText(for: tempMax),
+            lowTemperature: unitGroup.temperatureText(for: tempMin),
+            conditions: conditions
+        )
+    }
+
+    private func weekdayName(timeZone: TimeZone) -> String {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+
+        let dateParser = DateFormatter()
+        dateParser.calendar = calendar
+        dateParser.locale = Locale(identifier: "en_US_POSIX")
+        dateParser.timeZone = timeZone
+        dateParser.dateFormat = "yyyy-MM-dd"
+
+        guard let date = dateParser.date(from: datetime) else {
+            return datetime
+        }
+
+        let weekdayFormatter = DateFormatter()
+        weekdayFormatter.calendar = calendar
+        weekdayFormatter.locale = .current
+        weekdayFormatter.timeZone = timeZone
+        weekdayFormatter.setLocalizedDateFormatFromTemplate("EEEE")
+        return weekdayFormatter.string(from: date)
     }
 }

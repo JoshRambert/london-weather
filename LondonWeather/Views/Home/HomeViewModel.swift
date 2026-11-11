@@ -13,15 +13,20 @@ final class HomeViewModel {
     
     enum State: Equatable {
         case loading
-        case loaded(resolvedAddress: String, currentConditions: CurrentConditionsDetails)
+        case loaded(
+            resolvedAddress: String,
+            currentConditions: CurrentConditionsDetails,
+            forecastDays: [Day.Forecast]
+        )
         case error
     }
 
     private let store: Store
     private let weatherService: any WeatherService
-    private var isLoading = false
+    private var requestID = 0
 
     private(set) var state: State = .loading
+    var temperatureUnit: WeatherUnitGroup = .metric
 
     init(store: Store, weatherService: any WeatherService) {
         self.store = store
@@ -29,15 +34,16 @@ final class HomeViewModel {
     }
 
     func loadCurrentWeather() async {
-        guard !isLoading else { return }
-        isLoading = true
+        requestID += 1
+        let activeRequestID = requestID
         state = .loading
-        defer { isLoading = false }
+
+        let unitGroup = temperatureUnit
 
         do {
-            let weather = try await weatherService.currentLondonWeather()
+            let weather = try await weatherService.currentLondonWeather(unitGroup: unitGroup)
+            guard activeRequestID == self.requestID else { return }
             let conditions = weather.currentConditions
-            let unitGroup = weatherService.unitGroup
             state = .loaded(
                 resolvedAddress: weather.resolvedAddress,
                 currentConditions: CurrentConditionsDetails(
@@ -45,13 +51,15 @@ final class HomeViewModel {
                     feelsLikeTemperature: unitGroup.temperatureText(for: conditions.feelsLike),
                     conditions: conditions.conditions,
                     windSpeed: unitGroup.windSpeedText(for: conditions.windSpeed)
-                )
+                ),
+                forecastDays: weather.forecastDays(unitGroup: unitGroup)
             )
         } catch is CancellationError {
             return
         } catch let error as URLError where error.code == .cancelled {
             return
         } catch {
+            guard activeRequestID == self.requestID else { return }
             state = .error
             store.presentErrorAlert(
                 (error as? LocalizedError)?.errorDescription ?? "The current weather could not be loaded.",

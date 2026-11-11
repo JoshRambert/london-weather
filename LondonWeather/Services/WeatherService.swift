@@ -3,12 +3,22 @@ import Foundation
 protocol WeatherService: Sendable {
     var unitGroup: WeatherUnitGroup { get }
     func currentWeather(forCity city: String) async throws -> CityWeather
+    func currentWeather(forCity city: String, unitGroup: WeatherUnitGroup) async throws -> CityWeather
     func currentLondonWeather() async throws -> CityWeather
+    func currentLondonWeather(unitGroup: WeatherUnitGroup) async throws -> CityWeather
 }
 
 extension WeatherService {
+    func currentWeather(forCity city: String) async throws -> CityWeather {
+        try await currentWeather(forCity: city, unitGroup: unitGroup)
+    }
+
     func currentLondonWeather() async throws -> CityWeather {
-        try await currentWeather(forCity: "London")
+        try await currentLondonWeather(unitGroup: unitGroup)
+    }
+
+    func currentLondonWeather(unitGroup: WeatherUnitGroup) async throws -> CityWeather {
+        try await currentWeather(forCity: "London", unitGroup: unitGroup)
     }
 }
 
@@ -60,9 +70,9 @@ struct LiveWeatherService: WeatherService {
         self.unitGroup = unitGroup
     }
 
-    func currentWeather(forCity city: String) async throws -> CityWeather {
+    func currentWeather(forCity city: String, unitGroup: WeatherUnitGroup) async throws -> CityWeather {
         do {
-            return try await fetchCurrentWeather(forCity: city)
+            return try await fetchCurrentWeather(forCity: city, unitGroup: unitGroup)
         } catch is CancellationError {
             throw CancellationError()
         } catch let error as URLError where error.code == .cancelled {
@@ -76,7 +86,7 @@ struct LiveWeatherService: WeatherService {
         }
     }
 
-    private func fetchCurrentWeather(forCity city: String) async throws -> CityWeather {
+    private func fetchCurrentWeather(forCity city: String, unitGroup: WeatherUnitGroup) async throws -> CityWeather {
         
         let location = city.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -84,7 +94,7 @@ struct LiveWeatherService: WeatherService {
             throw WeatherServiceError.emptyCity
         }
         
-        guard let url = currentWeatherURL(city: location) else {
+        guard let url = currentWeatherURL(city: location, unitGroup: unitGroup) else {
             throw WeatherServiceError.invalidURL
         }
 
@@ -115,7 +125,7 @@ struct LiveWeatherService: WeatherService {
         }
     }
 
-    private func currentWeatherURL(city: String) -> URL? {
+    private func currentWeatherURL(city: String, unitGroup: WeatherUnitGroup) -> URL? {
         guard var components = URLComponents(
             url: baseURL.appendingPathComponent(city),
             resolvingAgainstBaseURL: false
@@ -150,34 +160,5 @@ struct LiveWeatherService: WeatherService {
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard text.count > 300 else { return text }
         return String(text.prefix(300))
-    }
-}
-
-struct InMemoryWeatherService: WeatherService {
-    let unitGroup: WeatherUnitGroup
-    private let currentWeatherForCity: @Sendable (String) async throws -> CityWeather
-
-    init(
-        unitGroup: WeatherUnitGroup = .metric,
-        currentWeatherForCity: @escaping @Sendable (String) async throws -> CityWeather
-    ) {
-        self.unitGroup = unitGroup
-        self.currentWeatherForCity = currentWeatherForCity
-    }
-
-    init(weather: CityWeather, unitGroup: WeatherUnitGroup = .metric) {
-        self.init(unitGroup: unitGroup) { _ in
-            weather
-        }
-    }
-
-    init(error: WeatherServiceError, unitGroup: WeatherUnitGroup = .metric) {
-        self.init(unitGroup: unitGroup) { _ in
-            throw error
-        }
-    }
-
-    func currentWeather(forCity city: String) async throws -> CityWeather {
-        try await currentWeatherForCity(city)
     }
 }

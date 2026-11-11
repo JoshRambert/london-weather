@@ -20,17 +20,56 @@ struct HomeView: View {
             switch viewModel.state {
             case .loading:
                 loadingState
-            case .loaded(let resolvedAddress, let currentConditions):
-                loadedState(resolvedAddress: resolvedAddress, currentConditions: currentConditions)
+            case .loaded(let resolvedAddress, let currentConditions, let forecastDays):
+                loadedState(
+                    resolvedAddress: resolvedAddress,
+                    currentConditions: currentConditions,
+                    forecastDays: forecastDays
+                )
             case .error:
                 EmptyView()
             }
         }
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .safeAreaInset(edge: .top, alignment: .trailing, spacing: 0) {
+            temperatureUnitControl
+        }
+        .safeAreaInset(edge: .bottom, alignment: .leading, spacing: 0) {
+            weatherDataAttribution
+        }
+        .onChange(of: viewModel.temperatureUnit) { _, _ in
+            Task { await viewModel.loadCurrentWeather() }
+        }
         .task {
             await viewModel.loadCurrentWeather()
         }
+    }
+
+    private var temperatureUnitControl: some View {
+        Picker("Temperature unit", selection: $viewModel.temperatureUnit) {
+            Text("°C").tag(WeatherUnitGroup.metric)
+            Text("°F").tag(WeatherUnitGroup.us)
+        }
+        .pickerStyle(.segmented)
+        .frame(width: 112)
+        .padding(.trailing, 24)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .background(Color(.systemBackground).ignoresSafeArea(edges: .top))
+    }
+
+    private var weatherDataAttribution: some View {
+        Link(
+            "Weather data provided by Visual Crossing Weather",
+            destination: URL(string: "https://www.visualcrossing.com")!
+        )
+        .font(.footnote)
+        .multilineTextAlignment(.leading)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.systemBackground).ignoresSafeArea(edges: .bottom))
     }
 
     private var loadingState: some View {
@@ -46,15 +85,55 @@ struct HomeView: View {
 
     private func loadedState(
         resolvedAddress: String,
-        currentConditions: CurrentConditionsDetails
+        currentConditions: CurrentConditionsDetails,
+        forecastDays: [Day.Forecast]
     ) -> some View {
-        VStack(spacing: 28) {
-            Text(resolvedAddress)
-                .font(.largeTitle.bold())
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 28) {
+                Text(resolvedAddress)
+                    .font(.system(size: 44, weight: .bold))
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-            currentConditionsContainer(currentConditions)
+                currentConditionsContainer(currentConditions)
+                forecastDayList(forecastDays)
+            }
+        }
+    }
+
+    private func forecastDayList(_ forecastDays: [Day.Forecast]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Forecast Ahead")
+                .font(.title2.bold())
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 16)
+
+            VStack(spacing: 0) {
+                ForEach(forecastDays) { day in
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(day.dayName)
+                            .font(.headline)
+                        Text("High \(day.highTemperature)  ·  Low \(day.lowTemperature)")
+                            .font(.body)
+                        Text(day.conditions)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 14)
+                    .accessibilityElement(children: .combine)
+
+                    if day.id != forecastDays.last?.id {
+                        Divider()
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+        .background {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
         }
     }
 
