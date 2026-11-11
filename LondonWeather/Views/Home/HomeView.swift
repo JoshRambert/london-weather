@@ -19,12 +19,20 @@ struct HomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
         .navigationTitle(viewModel.title)
+        .task {
+            await viewModel.loadCurrentWeather()
+        }
     }
 }
 
 #Preview {
     let store = Store(route: .homeView)
     NavigationStack {
-        HomeView(viewModel: HomeViewModel(store: store))
+        HomeView(
+            viewModel: HomeViewModel(
+                store: store,
+                weatherService: LiveWeatherService()
+            )
+        )
     }
 }

@@ -2,14 +2,13 @@ import SwiftUI
 
 struct RootView: View {
     @Environment(Store.self) private var store
+    @Environment(AppDependencies.self) private var dependencies
 
     var body: some View {
         @Bindable var store = store
 
         root
-            .fullScreenCover(item: $store.modal) { _ in
-                EmptyView()
-            }
+            .fullScreenCover(item: $store.modal) { _ in }
             .alert(
                 "London Weather",
                 isPresented: errorAlertIsPresented,
@@ -33,12 +32,11 @@ struct RootView: View {
         switch store.route {
         case .homeView:
             NavigationStack(path: $store.homePath) {
-                HomeView(
-                    viewModel: HomeViewModel(store: store)
+                HomeFlowView(
+                    store: store,
+                    weatherService: dependencies.weatherService
                 )
-                .navigationDestination(for: HomeNavigation.self) { _ in
-                    EmptyView()
-                }
+                .navigationDestination(for: HomeNavigation.self) { _ in }
             }
         }
     }
@@ -52,5 +50,17 @@ struct RootView: View {
                 }
             }
         )
+    }
+}
+
+private struct HomeFlowView: View {
+    @State private var viewModel: HomeViewModel
+
+    init(store: Store, weatherService: any WeatherService) {
+        _viewModel = State(initialValue: HomeViewModel(store: store, weatherService: weatherService))
+    }
+
+    var body: some View {
+        HomeView(viewModel: viewModel)
     }
 }

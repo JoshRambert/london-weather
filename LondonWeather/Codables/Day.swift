@@ -1,6 +1,6 @@
 import Foundation
 
-struct Day: Codable {
+struct Day: Codable, Sendable {
     let datetime: String
     let datetimeEpoch: Int
     let tempMax: Double

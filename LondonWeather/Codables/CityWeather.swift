@@ -1,6 +1,6 @@
 import Foundation
 
-struct CityWeather: Codable {
+struct CityWeather: Codable, Sendable {
     let queryCost: Int
     let latitude: Double
     let longitude: Double
