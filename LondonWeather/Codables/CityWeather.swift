@@ -1,6 +1,13 @@
 import Foundation
 
 struct CityWeather: Codable, Sendable {
+    struct CurrentConditionsDetails: Equatable {
+        let temperature: String
+        let feelsLikeTemperature: String
+        let conditions: String
+        let windSpeed: String
+    }
+
     let queryCost: Int
     let latitude: Double
     let longitude: Double
@@ -21,6 +28,15 @@ struct CityWeather: Codable, Sendable {
         case timezoneOffset = "tzoffset"
         case days
         case currentConditions
+    }
+
+    func currentConditionDetails(unitGroup: WeatherUnitGroup) -> CurrentConditionsDetails {
+        CurrentConditionsDetails(
+            temperature: unitGroup.temperatureText(for: currentConditions.temp),
+            feelsLikeTemperature: unitGroup.temperatureText(for: currentConditions.feelsLike),
+            conditions: currentConditions.conditions,
+            windSpeed: unitGroup.windSpeedText(for: currentConditions.windSpeed)
+        )
     }
 
     func forecastDays(unitGroup: WeatherUnitGroup) -> [Day.Forecast] {

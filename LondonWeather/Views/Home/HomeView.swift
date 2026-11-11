@@ -85,7 +85,7 @@ struct HomeView: View {
 
     private func loadedState(
         resolvedAddress: String,
-        currentConditions: CurrentConditionsDetails,
+        currentConditions: CityWeather.CurrentConditionsDetails,
         forecastDays: [Day.Forecast]
     ) -> some View {
         ScrollView(showsIndicators: false) {
@@ -137,7 +137,7 @@ struct HomeView: View {
         }
     }
 
-    private func currentConditionsContainer(_ currentConditions: CurrentConditionsDetails) -> some View {
+    private func currentConditionsContainer(_ currentConditions: CityWeather.CurrentConditionsDetails) -> some View {
         VStack(alignment: .leading, spacing: 18) {
             conditionLine(label: "Temperature", value: currentConditions.temperature, prominent: true)
             conditionLine(label: "Feels like", value: currentConditions.feelsLikeTemperature)

@@ -1,12 +1,5 @@
 import Foundation
 
-struct CurrentConditionsDetails: Equatable {
-    let temperature: String
-    let feelsLikeTemperature: String
-    let conditions: String
-    let windSpeed: String
-}
-
 @MainActor
 @Observable
 final class HomeViewModel {
@@ -15,7 +8,7 @@ final class HomeViewModel {
         case loading
         case loaded(
             resolvedAddress: String,
-            currentConditions: CurrentConditionsDetails,
+            currentConditions: CityWeather.CurrentConditionsDetails,
             forecastDays: [Day.Forecast]
         )
         case error
@@ -43,15 +36,9 @@ final class HomeViewModel {
         do {
             let weather = try await weatherService.currentLondonWeather(unitGroup: unitGroup)
             guard activeRequestID == self.requestID else { return }
-            let conditions = weather.currentConditions
             state = .loaded(
                 resolvedAddress: weather.resolvedAddress,
-                currentConditions: CurrentConditionsDetails(
-                    temperature: unitGroup.temperatureText(for: conditions.temp),
-                    feelsLikeTemperature: unitGroup.temperatureText(for: conditions.feelsLike),
-                    conditions: conditions.conditions,
-                    windSpeed: unitGroup.windSpeedText(for: conditions.windSpeed)
-                ),
+                currentConditions: weather.currentConditionDetails(unitGroup: unitGroup),
                 forecastDays: weather.forecastDays(unitGroup: unitGroup)
             )
         } catch is CancellationError {
