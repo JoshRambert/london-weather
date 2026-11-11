@@ -5,16 +5,14 @@ import SwiftUI
 public final class Store {
     public private(set) var route: Route
     public var modal: ModalRoute?
-    public var bottomSheet: BottomSheetRoute?
     public var homePath = NavigationPath()
     public private(set) var homeRefreshGeneration: UInt = 0
+    public private(set) var errorAlert: ErrorAlert?
 
-    private var pendingSheetActions: PendingSheetActions = .none
-    private var stagedSheetDismissAction: (() async -> Void)?
-
-    private enum PendingSheetActions {
-        case none
-        case errorRetry(() async -> Void)
+    public struct ErrorAlert: Identifiable {
+        public let id = UUID()
+        public let message: String
+        public let retryAction: (() async -> Void)?
     }
 
     public init(route: Route) {
@@ -33,16 +31,10 @@ public final class Store {
         modal = nil
     }
 
-    public func dismissBottomSheet() {
-        pendingSheetActions = .none
-        stagedSheetDismissAction = nil
-        bottomSheet = nil
-    }
-
     public func clearNavigationState() {
         homePath = NavigationPath()
         modal = nil
-        dismissBottomSheet()
+        errorAlert = nil
     }
 
     public func notifyHomeToRefresh() {
@@ -53,23 +45,11 @@ public final class Store {
         homePath = NavigationPath()
     }
 
-    public func presentErrorSheet(_ message: String, retryAction: (() async -> Void)? = nil) {
-        pendingSheetActions = retryAction.map(PendingSheetActions.errorRetry) ?? .none
-        bottomSheet = .errorSheet(message, canRetry: retryAction != nil)
+    public func presentErrorAlert(_ message: String, retryAction: (() async -> Void)? = nil) {
+        errorAlert = ErrorAlert(message: message, retryAction: retryAction)
     }
 
-    public func confirmPendingErrorRetryAction() {
-        if case .errorRetry(let retryAction) = pendingSheetActions {
-            stagedSheetDismissAction = retryAction
-        }
-        pendingSheetActions = .none
-        bottomSheet = nil
-    }
-
-    public func runStagedSheetActionOnDismiss() async {
-        pendingSheetActions = .none
-        guard let action = stagedSheetDismissAction else { return }
-        stagedSheetDismissAction = nil
-        await action()
+    public func dismissErrorAlert() {
+        errorAlert = nil
     }
 }

@@ -11,9 +11,3 @@ public enum ModalRoute: Identifiable, Equatable {
         switch self {}
     }
 }
-
-public enum BottomSheetRoute: Identifiable {
-    case errorSheet(String, canRetry: Bool = false)
-
-    public var id: String { String(describing: self) }
-}
