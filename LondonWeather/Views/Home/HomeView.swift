@@ -24,10 +24,7 @@ struct HomeView: View {
 
 #Preview {
     let store = Store(route: .homeView)
-    let dependencies = AppDependencies()
     NavigationStack {
-        HomeView(
-            viewModel: HomeViewModel(store: store, dependencies: dependencies)
-        )
+        HomeView(viewModel: HomeViewModel(store: store))
     }
 }

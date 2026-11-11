@@ -2,7 +2,6 @@ import SwiftUI
 
 struct RootView: View {
     @Environment(Store.self) private var store
-    @Environment(AppDependencies.self) private var dependencies
 
     var body: some View {
         @Bindable var store = store
@@ -35,7 +34,7 @@ struct RootView: View {
         case .homeView:
             NavigationStack(path: $store.homePath) {
                 HomeView(
-                    viewModel: HomeViewModel(store: store, dependencies: dependencies)
+                    viewModel: HomeViewModel(store: store)
                 )
                 .navigationDestination(for: HomeNavigation.self) { _ in
                     EmptyView()

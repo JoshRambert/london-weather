@@ -2,14 +2,16 @@ import SwiftUI
 
 @main
 struct LondonWeatherApp: App {
-    @State private var store = Store(route: .homeView)
-    @State private var dependencies = AppDependencies()
+    private let store: Store
+
+    init() {
+        store = Store(route: .homeView)
+    }
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environment(store)
-                .environment(dependencies)
         }
     }
 }
