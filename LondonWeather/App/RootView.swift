@@ -6,24 +6,24 @@ struct RootView: View {
 
     var body: some View {
         @Bindable var store = store
+        let sheetCoordinator = RootBottomSheetCoordinator(store: store)
 
         root
             .fullScreenCover(item: $store.modal) { _ in
                 EmptyView()
             }
-            .alert(
-                "London Weather",
-                isPresented: errorAlertIsPresented,
-                presenting: store.errorAlert
-            ) { alert in
-                Button("OK", role: .cancel) {}
-                if let retryAction = alert.retryAction {
-                    Button("Try Again") {
-                        Task { await retryAction() }
-                    }
+            .sheet(item: $store.bottomSheet, onDismiss: {
+                Task { await store.runStagedSheetActionOnDismiss() }
+            }) { route in
+                switch route {
+                case .errorSheet(let message, let canRetry):
+                    ErrorBottomSheet(
+                        message: message,
+                        canRetry: canRetry,
+                        dismiss: sheetCoordinator.makeDismissBottomSheetAction(),
+                        retry: sheetCoordinator.makeErrorRetryAction()
+                    )
                 }
-            } message: { alert in
-                Text(alert.message)
             }
     }
 
@@ -42,16 +42,5 @@ struct RootView: View {
                 }
             }
         }
-    }
-
-    private var errorAlertIsPresented: Binding<Bool> {
-        Binding(
-            get: { store.errorAlert != nil },
-            set: { isPresented in
-                if !isPresented {
-                    store.dismissErrorAlert()
-                }
-            }
-        )
     }
 }
