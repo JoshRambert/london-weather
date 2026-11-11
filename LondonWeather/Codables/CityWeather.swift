@@ -7,7 +7,19 @@ struct CityWeather: Codable {
     let resolvedAddress: String
     let address: String
     let timezone: String
-    let tzoffset: Double
+    let tzOffset: Double
     let days: [Day]
     let currentConditions: Hour
+
+    enum CodingKeys: String, CodingKey {
+        case queryCost
+        case latitude
+        case longitude
+        case resolvedAddress
+        case address
+        case timezone
+        case tzOffset = "tzoffset"
+        case days
+        case currentConditions
+    }
 }

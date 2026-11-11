@@ -3,26 +3,53 @@ import Foundation
 struct Day: Codable {
     let datetime: String
     let datetimeEpoch: Int
-    let tempmax: Double
-    let tempmin: Double
+    let tempMax: Double
+    let tempMin: Double
     let temp: Double
-    let feelslikemax: Double
-    let feelslikemin: Double
-    let feelslike: Double
+    let feelsLikeMax: Double
+    let feelsLikeMin: Double
+    let feelsLike: Double
     let humidity: Double
     let precip: Double
-    let precipprob: Double
-    let snowdepth: Double
-    let windgust: Double
-    let windspeed: Double
-    let winddir: Double
+    let precipProb: Double
+    let snowDepth: Double
+    let windGust: Double
+    let windSpeed: Double
+    let windDir: Double
     let pressure: Double
-    let cloudcover: Double
+    let cloudCover: Double
     let visibility: Double
     let conditions: String
     let icon: String
     let source: String
-    let aqius: Int?
-    let aqieur: Int?
+    let aqiUS: Int?
+    let aqiEU: Int?
     let hours: [Hour]?
+
+    enum CodingKeys: String, CodingKey {
+        case datetime
+        case datetimeEpoch
+        case tempMax = "tempmax"
+        case tempMin = "tempmin"
+        case temp
+        case feelsLikeMax = "feelslikemax"
+        case feelsLikeMin = "feelslikemin"
+        case feelsLike = "feelslike"
+        case humidity
+        case precip
+        case precipProb = "precipprob"
+        case snowDepth = "snowdepth"
+        case windGust = "windgust"
+        case windSpeed = "windspeed"
+        case windDir = "winddir"
+        case pressure
+        case cloudCover = "cloudcover"
+        case visibility
+        case conditions
+        case icon
+        case source
+        case aqiUS = "aqius"
+        case aqiEU = "aqieur"
+        case hours
+    }
 }
