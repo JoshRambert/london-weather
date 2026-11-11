@@ -15,7 +15,7 @@ struct Day: Codable {
     let snowDepth: Double
     let windGust: Double
     let windSpeed: Double
-    let windDir: Double
+    let windDirection: Double
     let pressure: Double
     let cloudCover: Double
     let visibility: Double
@@ -41,7 +41,7 @@ struct Day: Codable {
         case snowDepth = "snowdepth"
         case windGust = "windgust"
         case windSpeed = "windspeed"
-        case windDir = "winddir"
+        case windDirection = "winddir"
         case pressure
         case cloudCover = "cloudcover"
         case visibility
