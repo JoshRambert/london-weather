@@ -23,6 +23,18 @@ struct RootView: View {
             } message: { alert in
                 Text(alert.message)
             }
+            .sheet(item: $store.bottomSheet, onDismiss: {
+                Task { await store.runStagedSheetActionOnDismiss() }
+            }) { route in
+                switch route {
+                case .hourlyConditions(let dayName, let hours):
+                    HourlyConditionsBottomSheet(
+                        dayName: dayName,
+                        hours: hours,
+                        dismiss: RootBottomSheetCoordinator(store: store).makeDismissBottomSheetAction()
+                    )
+                }
+            }
     }
 
     @ViewBuilder

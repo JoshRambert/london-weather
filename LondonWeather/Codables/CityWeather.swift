@@ -8,6 +8,15 @@ struct CityWeather: Codable, Sendable {
         let windSpeed: String
     }
 
+    struct HourlyCondition: Equatable, Identifiable {
+        let id: String
+        let time: String
+        let temperature: String
+        let feelsLikeTemperature: String
+        let conditions: String
+        let windSpeed: String
+    }
+
     let queryCost: Int
     let latitude: Double
     let longitude: Double
@@ -37,6 +46,20 @@ struct CityWeather: Codable, Sendable {
             conditions: currentConditions.conditions,
             windSpeed: unitGroup.windSpeedText(for: currentConditions.windSpeed)
         )
+    }
+
+    func hourlyConditions(unitGroup: WeatherUnitGroup) -> [HourlyCondition] {
+        let hours = days.first?.hours ?? []
+        return hours.map { hour in
+            HourlyCondition(
+                id: hour.datetime,
+                time: hour.hourAndMinute,
+                temperature: unitGroup.temperatureText(for: hour.temp),
+                feelsLikeTemperature: unitGroup.temperatureText(for: hour.feelsLike),
+                conditions: hour.conditions,
+                windSpeed: unitGroup.windSpeedText(for: hour.windSpeed)
+            )
+        }
     }
 
     func forecastDays(unitGroup: WeatherUnitGroup) -> [Day.Forecast] {

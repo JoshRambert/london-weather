@@ -28,8 +28,9 @@ struct WeatherServiceTests {
 
         let url = try #require(requestedURL.value)
         #expect(url.path.hasSuffix("/London"))
-        #expect(url.query?.contains("include=current") == true)
-        #expect(url.query?.contains("unitGroup=metric") == true)
+        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        #expect(components?.queryItems?.contains { $0.name == "include" && $0.value == "current,hours" } == true)
+        #expect(components?.queryItems?.contains { $0.name == "unitGroup" && $0.value == "metric" } == true)
         #expect(weather.resolvedAddress == "London")
         #expect(weather.currentConditions.temp == 9)
         #expect(weather.currentConditions.conditions == "Overcast")

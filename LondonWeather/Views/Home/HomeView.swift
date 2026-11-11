@@ -20,7 +20,7 @@ struct HomeView: View {
             switch viewModel.state {
             case .loading:
                 loadingState
-            case .loaded(let resolvedAddress, let currentConditions, let forecastDays):
+            case .loaded(let resolvedAddress, let currentConditions, let forecastDays, _):
                 loadedState(
                     resolvedAddress: resolvedAddress,
                     currentConditions: currentConditions,
@@ -143,6 +143,10 @@ struct HomeView: View {
             conditionLine(label: "Feels like", value: currentConditions.feelsLikeTemperature)
             conditionLine(label: "Conditions", value: currentConditions.conditions)
             conditionLine(label: "Wind", value: currentConditions.windSpeed)
+            Button("Hourly conditions") {
+                viewModel.presentHourlyConditions()
+            }
+            .buttonStyle(.bordered)
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)

@@ -42,4 +42,9 @@ struct Hour: Codable, Sendable {
         case icon
         case source
     }
+
+    var hourAndMinute: String {
+        guard datetime.count >= 5 else { return datetime }
+        return String(datetime.prefix(5))
+    }
 }

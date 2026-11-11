@@ -8,6 +8,14 @@ public final class Store {
     public var homePath = NavigationPath()
     public private(set) var homeRefreshGeneration: UInt = 0
     public private(set) var errorAlert: ErrorAlert?
+    var bottomSheet: BottomSheetRoute?
+
+    private var pendingSheetActions = PendingSheetActions.none
+    private var stagedSheetDismissAction: (() async -> Void)?
+
+    private enum PendingSheetActions {
+        case none
+    }
 
     public struct ErrorAlert: Identifiable {
         public let id = UUID()
@@ -35,6 +43,7 @@ public final class Store {
         homePath = NavigationPath()
         modal = nil
         errorAlert = nil
+        dismissBottomSheet()
     }
 
     public func notifyHomeToRefresh() {
@@ -51,5 +60,22 @@ public final class Store {
 
     public func dismissErrorAlert() {
         errorAlert = nil
+    }
+
+    func presentHourlyConditionsBottomSheet(dayName: String, hours: [CityWeather.HourlyCondition]) {
+        pendingSheetActions = .none
+        bottomSheet = .hourlyConditions(dayName: dayName, hours: hours)
+    }
+
+    func dismissBottomSheet() {
+        pendingSheetActions = .none
+        stagedSheetDismissAction = nil
+        bottomSheet = nil
+    }
+
+    func runStagedSheetActionOnDismiss() async {
+        guard let action = stagedSheetDismissAction else { return }
+        stagedSheetDismissAction = nil
+        await action()
     }
 }

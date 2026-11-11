@@ -9,7 +9,8 @@ final class HomeViewModel {
         case loaded(
             resolvedAddress: String,
             currentConditions: CityWeather.CurrentConditionsDetails,
-            forecastDays: [Day.Forecast]
+            forecastDays: [Day.Forecast],
+            hourlyConditions: [CityWeather.HourlyCondition]
         )
         case error
     }
@@ -39,7 +40,8 @@ final class HomeViewModel {
             state = .loaded(
                 resolvedAddress: weather.resolvedAddress,
                 currentConditions: weather.currentConditionDetails(unitGroup: unitGroup),
-                forecastDays: weather.forecastDays(unitGroup: unitGroup)
+                forecastDays: weather.forecastDays(unitGroup: unitGroup),
+                hourlyConditions: weather.hourlyConditions(unitGroup: unitGroup)
             )
         } catch is CancellationError {
             return
@@ -55,5 +57,12 @@ final class HomeViewModel {
                 }
             )
         }
+    }
+
+    func presentHourlyConditions() {
+        guard case .loaded(_, _, let forecastDays, let hourlyConditions) = state else { return }
+        let dayName = forecastDays.first?.dayName ?? "Today"
+        
+        store.presentHourlyConditionsBottomSheet(dayName: dayName, hours: hourlyConditions)
     }
 }

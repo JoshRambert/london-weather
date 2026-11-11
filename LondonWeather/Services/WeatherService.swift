@@ -135,7 +135,7 @@ struct LiveWeatherService: WeatherService {
 
         var queryItems = [
             URLQueryItem(name: "unitGroup", value: unitGroup.rawValue),
-            URLQueryItem(name: "include", value: "current"),
+            URLQueryItem(name: "include", value: "current,hours"),
             URLQueryItem(name: "contentType", value: "json")
         ]
         if let apiKey {

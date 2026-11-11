@@ -11,3 +11,14 @@ public enum ModalRoute: Identifiable, Equatable {
         switch self {}
     }
 }
+
+enum BottomSheetRoute: Identifiable, Equatable {
+    case hourlyConditions(dayName: String, hours: [CityWeather.HourlyCondition])
+
+    var id: String {
+        switch self {
+        case .hourlyConditions(let dayName, let hours):
+            "hourlyConditions-\(dayName)-\(hours.count)"
+        }
+    }
+}
