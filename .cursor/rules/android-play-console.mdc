@@ -1,0 +1,101 @@
+---
+description: Canonical Google Play Developer API CLI for every Android repo (tools/play). Copy from ai-rules/android-play; do not invent a second publisher.
+alwaysApply: false
+---
+
+# Android Play Console CLI (canonical)
+
+Every native Android app repo ships **the same** Play publishing CLI. Reference
+implementation: **`ai-rules/android-play/`** (first app copy: troutt-android
+`tools/play/`). Do not invent Fastlane Supply, Gradle Play Publisher, or a
+one-off Python script as the app’s release surface.
+
+Talks to **Google Play Developer API** `androidpublisher` v3. It does **not**
+log into play.google.com in a browser. The API cannot create the Play listing,
+finish store questionnaires, or enroll Play App Signing for the first time.
+
+## Install into an Android repo
+
+Copy the canonical tree; do not rewrite it. Then set per-app secrets (gitignored).
+
+```bash
+mkdir -p /path/to/app/tools/play
+cp "$HOME/Desktop/ai-rules/android-play/play" \
+   "$HOME/Desktop/ai-rules/android-play/play.py" \
+   "$HOME/Desktop/ai-rules/android-play/requirements.txt" \
+   "$HOME/Desktop/ai-rules/android-play/.gitignore" \
+   /path/to/app/tools/play/
+chmod +x /path/to/app/tools/play/play
+cp "$HOME/Desktop/ai-rules/android-play/keystore.properties.example" \
+   /path/to/app/keystore.properties.example
+```
+
+If `ai-rules/android-play/` changes, copy it forward again. Keep `play.py`
+identical across apps — package id is read from Gradle, not hardcoded.
+
+## Files
+
+```
+tools/play/play              # wrapper: venv + pip + play.py
+tools/play/play.py           # androidpublisher v3 client
+tools/play/requirements.txt
+tools/play/.gitignore        # .venv/
+keystore.properties.example  # repo root; copy to keystore.properties
+```
+
+**Gitignore (never commit):** `play-service-account.json`, `keystore.properties`,
+`*.jks`, `*.keystore`, `tools/play/.venv/`.
+
+## Commands
+
+```bash
+./tools/play/play setup                          # Console checklist + local files
+./tools/play/play whoami                         # service-account access
+./tools/play/play status                         # local version + Play tracks
+./tools/play/play upload --track internal        # bundleRelease + commit to track
+./tools/play/play promote --from-track internal --to-track production --yes
+```
+
+`upload` builds `:app:bundleRelease` unless `--aab` is passed. `--bump` increments
+`versionCode` and the patch segment of `versionName`. Default track status is
+`completed`. A **completed production** release requires `--yes`. `--package`
+defaults to `PLAY_PACKAGE` or `applicationId` in `app/build.gradle.kts`.
+
+Track aliases: `internal`/`qa`, `alpha`, `beta`/`open`, `production`/`prod`.
+
+## Signing (required for `upload` without `--aab`)
+
+Lookup order: `PLAY_KEYSTORE_*` env vars, then `keystore.properties`
+(`storeFile` / `storePassword` / `keyAlias` / `keyPassword`), then
+`local.properties` `RELEASE_STORE_FILE` / `RELEASE_STORE_PASSWORD` /
+`RELEASE_KEY_ALIAS` / `RELEASE_KEY_PASSWORD` (legacy `local.properties` on apps
+that already ship that way). New apps should use `keystore.properties`. Paths may be absolute or repo-root relative.
+If those values are missing, debug builds still work; `play upload` must fail
+instead of shipping an unsigned/debug AAB.
+
+`app/build.gradle.kts` must create a `release` signing config from the same
+sources.
+
+## One-time Play Console (producer)
+
+1. Create the app in Play Console with this repo’s `applicationId`.
+2. Link a Cloud project (Play Console → Setup → API access) and enable
+   **Google Play Android Developer API**.
+3. Create a service account; save the JSON as `play-service-account.json`.
+4. Invite that email under Users and permissions (at least view app + release
+   to testing tracks). Access can take a few hours.
+5. Generate an upload keystore; fill in `keystore.properties`.
+
+Then `./tools/play/play whoami` must succeed before the first `upload`.
+
+## Hard rules
+
+1. One CLI: copy `ai-rules/android-play/` → `tools/play/`. No second publisher.
+2. Do not hardcode an application id in `play.py`.
+3. Never commit the service-account JSON, keystore, or `keystore.properties`.
+4. Do not scrape Play Console. Edits API only (`insert` → `bundles.upload` →
+   `tracks.update` → `commit`).
+5. Production `completed` requires `--yes`. Default first upload is `internal`.
+6. Wire release signing in Gradle as above; do not upload a debug-signed AAB.
+7. Phase 6 of an iOS → Android port is not done until this CLI is in the repo
+   (listing + credentials may still be producer-gated).

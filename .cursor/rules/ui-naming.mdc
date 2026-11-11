@@ -1,0 +1,19 @@
+---
+description: Never abbreviate UI component names across iOS and Android (FloatingActionButton, not FAB)
+alwaysApply: true
+---
+
+# UI naming — no abbreviations
+
+Never use abbreviations when referring to view components or UI in code, comments, docs, or conversation about iOS or Android apps.
+
+## Floating action controls
+
+- Say and write **FloatingActionButton**, never **FAB**, **Fab**, or **fab** (wrap or alias Material 3's `FloatingActionButton` using the full name).
+- Stacks of those controls use **FloatingActionColumn** / **floatingActionColumn**.
+- Property and symbol names must spell this out (`applyFloatingActionButton`, `floatingActionColumn`), not shortened forms.
+
+## General
+
+- Prefer full, readable type and property names for reusable UI (`SharedListCell`, `FloatingActionItem`, etc.) across both SwiftUI Views and Jetpack Compose `@Composable` functions.
+- Do not introduce acronym-style UI nicknames in new code or when renaming existing symbols.
