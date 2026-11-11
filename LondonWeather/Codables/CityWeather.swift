@@ -7,7 +7,7 @@ struct CityWeather: Codable {
     let resolvedAddress: String
     let address: String
     let timezone: String
-    let tzOffset: Double
+    let timezoneOffset: Double
     let days: [Day]
     let currentConditions: Hour
 
@@ -18,7 +18,7 @@ struct CityWeather: Codable {
         case resolvedAddress
         case address
         case timezone
-        case tzOffset = "tzoffset"
+        case timezoneOffset = "tzoffset"
         case days
         case currentConditions
     }
