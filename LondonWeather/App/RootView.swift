@@ -7,7 +7,7 @@ struct RootView: View {
     var body: some View {
         @Bindable var store = store
 
-        root
+        content
             .fullScreenCover(item: $store.modal) { _ in }
             .alert(
                 "London Weather",
@@ -26,13 +26,13 @@ struct RootView: View {
     }
 
     @ViewBuilder
-    private var root: some View {
+    private var content: some View {
         @Bindable var store = store
 
         switch store.route {
         case .homeView:
             NavigationStack(path: $store.homePath) {
-                HomeFlowView(
+                HomeHostingView(
                     store: store,
                     weatherService: dependencies.weatherService
                 )
@@ -50,17 +50,5 @@ struct RootView: View {
                 }
             }
         )
-    }
-}
-
-private struct HomeFlowView: View {
-    @State private var viewModel: HomeViewModel
-
-    init(store: Store, weatherService: any WeatherService) {
-        _viewModel = State(initialValue: HomeViewModel(store: store, weatherService: weatherService))
-    }
-
-    var body: some View {
-        HomeView(viewModel: viewModel)
     }
 }

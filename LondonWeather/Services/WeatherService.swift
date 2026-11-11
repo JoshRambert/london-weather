@@ -1,27 +1,25 @@
 import Foundation
 
-enum WeatherUnitGroup: String, Sendable {
-    case us
-    case metric
-    case uk
-    case base
+protocol WeatherService: Sendable {
+    var unitGroup: WeatherUnitGroup { get }
+    func currentWeather(forCity city: String) async throws -> CityWeather
+    func currentLondonWeather() async throws -> CityWeather
+}
 
-    var temperatureSuffix: String {
-        switch self {
-        case .us:
-            "°F"
-        case .metric, .uk:
-            "°C"
-        case .base:
-            "K"
-        }
+extension WeatherService {
+    func currentLondonWeather() async throws -> CityWeather {
+        try await currentWeather(forCity: "London")
     }
 }
 
 enum WeatherServiceError: LocalizedError, Equatable, Sendable {
     case emptyCity
     case invalidURL
+    case noNetwork
+    case allowanceExceeded
     case httpStatus(code: Int, message: String)
+    case undecodableResponse
+    case unavailable
 
     var errorDescription: String? {
         switch self {
@@ -29,15 +27,16 @@ enum WeatherServiceError: LocalizedError, Equatable, Sendable {
             "Enter a city."
         case .invalidURL:
             "The weather request could not be created."
-        case .httpStatus(let code, let message):
-            message.isEmpty ? "The weather request failed (\(code))." : message
+        case .noNetwork:
+            "No network connection."
+        case .allowanceExceeded:
+            "The free weather allowance has run out."
+        case .httpStatus, .unavailable:
+            "The current weather could not be loaded."
+        case .undecodableResponse:
+            "The weather response could not be read."
         }
     }
-}
-
-protocol WeatherService: Sendable {
-    var unitGroup: WeatherUnitGroup { get }
-    func currentWeather(forCity city: String) async throws -> CityWeather
 }
 
 struct LiveWeatherService: WeatherService {
@@ -62,10 +61,29 @@ struct LiveWeatherService: WeatherService {
     }
 
     func currentWeather(forCity city: String) async throws -> CityWeather {
+        do {
+            return try await fetchCurrentWeather(forCity: city)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            throw error
+        } catch let error as URLError where Self.noNetworkCodes.contains(error.code) {
+            throw WeatherServiceError.noNetwork
+        } catch let error as WeatherServiceError {
+            throw error
+        } catch {
+            throw WeatherServiceError.unavailable
+        }
+    }
+
+    private func fetchCurrentWeather(forCity city: String) async throws -> CityWeather {
+        
         let location = city.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         guard !location.isEmpty else {
             throw WeatherServiceError.emptyCity
         }
+        
         guard let url = currentWeatherURL(city: location) else {
             throw WeatherServiceError.invalidURL
         }
@@ -79,14 +97,22 @@ struct LiveWeatherService: WeatherService {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw WeatherServiceError.invalidURL
         }
+        
         guard (200...299).contains(httpResponse.statusCode) else {
+            if httpResponse.statusCode == 429 {
+                throw WeatherServiceError.allowanceExceeded
+            }
             throw WeatherServiceError.httpStatus(
                 code: httpResponse.statusCode,
                 message: Self.responseMessage(from: data)
             )
         }
 
-        return try JSONDecoder().decode(CityWeather.self, from: data)
+        do {
+            return try JSONDecoder().decode(CityWeather.self, from: data)
+        } catch {
+            throw WeatherServiceError.undecodableResponse
+        }
     }
 
     private func currentWeatherURL(city: String) -> URL? {
@@ -108,6 +134,16 @@ struct LiveWeatherService: WeatherService {
         components.queryItems = queryItems
         return components.url
     }
+
+    private static let noNetworkCodes: Set<URLError.Code> = [
+        .notConnectedToInternet,
+        .networkConnectionLost,
+        .dataNotAllowed,
+        .internationalRoamingOff,
+        .cannotConnectToHost,
+        .cannotFindHost,
+        .dnsLookupFailed
+    ]
 
     private static func responseMessage(from data: Data) -> String {
         let text = String(decoding: data, as: UTF8.self)
