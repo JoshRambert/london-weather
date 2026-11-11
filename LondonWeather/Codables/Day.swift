@@ -1,6 +1,7 @@
 import Foundation
 
 struct Day: Codable, Sendable {
+    
     struct Forecast: Equatable, Identifiable {
         let id: String
         let dayName: String
