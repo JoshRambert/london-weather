@@ -69,6 +69,44 @@ struct WeatherServiceTests {
             try await service.currentWeather(forCity: "London")
         }
     }
+
+    @Test func nullNumericValuesDecodeAsNil() async throws {
+        StubbedWeatherURLProtocol.responder = { _ in
+            (200, WeatherFixture.nullNumericData)
+        }
+        let service = makeLiveService()
+
+        let weather = try await service.currentWeather(forCity: "London")
+        let day = try #require(weather.days.first)
+        let hour = try #require(day.hours?.first)
+
+        #expect(weather.queryCost == nil)
+        #expect(weather.latitude == nil)
+        #expect(weather.longitude == nil)
+        #expect(weather.timezoneOffset == nil)
+        #expect(weather.resolvedAddress == "London")
+
+        #expect(day.datetimeEpoch == nil)
+        #expect(day.temp == nil)
+        #expect(day.tempMax == nil)
+        #expect(day.tempMin == nil)
+        #expect(day.feelsLike == nil)
+        #expect(day.windSpeed == nil)
+        #expect(day.aqiUS == nil)
+        #expect(day.aqiEU == nil)
+        #expect(day.conditions == "Overcast")
+
+        #expect(hour.datetimeEpoch == nil)
+        #expect(hour.temp == nil)
+        #expect(hour.feelsLike == nil)
+        #expect(hour.windSpeed == nil)
+
+        #expect(weather.currentConditions.temp == nil)
+        #expect(weather.currentConditions.feelsLike == nil)
+        #expect(weather.currentConditions.windSpeed == nil)
+        #expect(weather.currentConditions.aqiUS == nil)
+        #expect(weather.currentConditions.conditions == "Overcast")
+    }
 }
 
 private func makeLiveService() -> LiveWeatherService {

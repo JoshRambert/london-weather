@@ -58,4 +58,89 @@ enum WeatherFixture {
         }
         """.utf8
     )
+
+    static let nullNumericData = Data(
+        """
+        {
+          "queryCost": null,
+          "latitude": null,
+          "longitude": null,
+          "resolvedAddress": "London",
+          "address": "London",
+          "timezone": "Europe/London",
+          "tzoffset": null,
+          "days": [
+            {
+              "datetime": "2026-11-11",
+              "datetimeEpoch": null,
+              "tempmax": null,
+              "tempmin": null,
+              "temp": null,
+              "feelslikemax": null,
+              "feelslikemin": null,
+              "feelslike": null,
+              "humidity": null,
+              "precip": null,
+              "precipprob": null,
+              "snowdepth": null,
+              "windgust": null,
+              "windspeed": null,
+              "winddir": null,
+              "pressure": null,
+              "cloudcover": null,
+              "visibility": null,
+              "conditions": "Overcast",
+              "icon": "cloudy",
+              "source": "comb",
+              "aqius": null,
+              "aqieur": null,
+              "hours": [
+                {
+                  "datetime": "12:00:00",
+                  "datetimeEpoch": null,
+                  "temp": null,
+                  "feelslike": null,
+                  "humidity": null,
+                  "precip": null,
+                  "precipprob": null,
+                  "snowdepth": null,
+                  "windgust": null,
+                  "windspeed": null,
+                  "winddir": null,
+                  "pressure": null,
+                  "visibility": null,
+                  "cloudcover": null,
+                  "aqius": null,
+                  "aqieur": null,
+                  "conditions": "Overcast",
+                  "icon": "cloudy",
+                  "source": "obs"
+                }
+              ]
+            }
+          ],
+          "currentConditions": {
+            "datetime": "12:00:00",
+            "datetimeEpoch": null,
+            "temp": null,
+            "feelslike": null,
+            "humidity": null,
+            "precip": null,
+            "precipprob": null,
+            "snowdepth": null,
+            "windgust": null,
+            "windspeed": null,
+            "winddir": null,
+            "pressure": null,
+            "visibility": null,
+            "cloudcover": null,
+            "aqius": null,
+            "aqieur": null,
+            "conditions": "Overcast",
+            "icon": "cloudy",
+            "source": "obs"
+          }
+        }
+        """.utf8
+    )
 }
