@@ -2,19 +2,19 @@ import Foundation
 
 struct Hour: Codable, Sendable {
     let datetime: String
-    let datetimeEpoch: Int
-    let temp: Double
-    let feelsLike: Double
-    let humidity: Double
-    let precipitation: Double
-    let precipitationProb: Double
-    let snowDepth: Double
-    let windGust: Double
-    let windSpeed: Double
-    let windDirection: Double
-    let pressure: Double
-    let visibility: Double
-    let cloudCover: Double
+    let datetimeEpoch: Int?
+    let temp: Double?
+    let feelsLike: Double?
+    let humidity: Double?
+    let precipitation: Double?
+    let precipitationProb: Double?
+    let snowDepth: Double?
+    let windGust: Double?
+    let windSpeed: Double?
+    let windDirection: Double?
+    let pressure: Double?
+    let visibility: Double?
+    let cloudCover: Double?
     let aqiUS: Int?
     let aqiEU: Int?
     let conditions: String

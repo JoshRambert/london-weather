@@ -28,11 +28,13 @@ enum WeatherUnitGroup: String, Sendable {
         }
     }
 
-    func temperatureText(for value: Double) -> String {
-        "\(Int(value.rounded()))\(temperatureSuffix)"
+    func temperatureText(for value: Double?) -> String {
+        guard let value else { return "—" }
+        return "\(Int(value.rounded()))\(temperatureSuffix)"
     }
 
-    func windSpeedText(for value: Double) -> String {
-        "\(Int(value.rounded())) \(windSpeedUnit)"
+    func windSpeedText(for value: Double?) -> String {
+        guard let value else { return "—" }
+        return "\(Int(value.rounded())) \(windSpeedUnit)"
     }
 }

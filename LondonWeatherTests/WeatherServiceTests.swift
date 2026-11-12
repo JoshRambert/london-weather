@@ -32,7 +32,7 @@ struct WeatherServiceTests {
         #expect(components?.queryItems?.contains { $0.name == "include" && $0.value == "current,hours" } == true)
         #expect(components?.queryItems?.contains { $0.name == "unitGroup" && $0.value == "metric" } == true)
         #expect(weather.resolvedAddress == "London")
-        #expect(weather.currentConditions.temp == 9)
+        #expect(weather.currentConditions.temp == 9.0)
         #expect(weather.currentConditions.conditions == "Overcast")
         #expect(weather.days.count == 1)
     }

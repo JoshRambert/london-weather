@@ -17,13 +17,13 @@ struct CityWeather: Codable, Sendable {
         let windSpeed: String
     }
 
-    let queryCost: Int
-    let latitude: Double
-    let longitude: Double
+    let queryCost: Int?
+    let latitude: Double?
+    let longitude: Double?
     let resolvedAddress: String
     let address: String
     let timezone: String
-    let timezoneOffset: Double
+    let timezoneOffset: Double?
     let days: [Day]
     let currentConditions: Hour
 

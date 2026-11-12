@@ -11,23 +11,23 @@ struct Day: Codable, Sendable {
     }
 
     let datetime: String
-    let datetimeEpoch: Int
-    let tempMax: Double
-    let tempMin: Double
-    let temp: Double
-    let feelsLikeMax: Double
-    let feelsLikeMin: Double
-    let feelsLike: Double
-    let humidity: Double
-    let precipitation: Double
-    let precipitationProb: Double
-    let snowDepth: Double
-    let windGust: Double
-    let windSpeed: Double
-    let windDirection: Double
-    let pressure: Double
-    let cloudCover: Double
-    let visibility: Double
+    let datetimeEpoch: Int?
+    let tempMax: Double?
+    let tempMin: Double?
+    let temp: Double?
+    let feelsLikeMax: Double?
+    let feelsLikeMin: Double?
+    let feelsLike: Double?
+    let humidity: Double?
+    let precipitation: Double?
+    let precipitationProb: Double?
+    let snowDepth: Double?
+    let windGust: Double?
+    let windSpeed: Double?
+    let windDirection: Double?
+    let pressure: Double?
+    let cloudCover: Double?
+    let visibility: Double?
     let conditions: String
     let icon: String
     let source: String
